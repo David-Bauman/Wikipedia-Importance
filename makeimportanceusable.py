@@ -2,45 +2,39 @@ def main():
     infile = open("importance_list","r")
     data = []
     word = True
-    nextplace = 0
+    next_place = 0
     for line in infile:
         line = line.strip()
         if word:
             data.append([line])
             word = False
         else:
-            data[nextplace].append(int(line))
+            data[next_place].append(int(line))
             word = True
-            nextplace += 1
-    bestlstEU = []
-    totalref = 0
-    totalpages = len(data)
-    quickfile = open("havethefileslst","r")
-    acc = 0
+            next_place += 1
+    top_twenty = []
+    total_refs = 0
+    total_referenced_pages = len(data)
+    quickfile = open("searched_pages_list","r")
+    total_searched_pages = 0
     for line in quickfile:
-        acc += 1
+        total_searched_pages += 1
+    quickfile.close()
     for item in data:
-        totalref += item[1]
+        total_refs += item[1]
     for x in range(20):
         best = ["",0]
         for item in data:
             if item[1] > best[1]:
                 best = item
-        bestlstEU.append(best)
+        top_twenty.append(best)
         data.remove(best)
-    for bestest in bestlstEU:
-        word = bestest[0]
-        cleanedword = ""
-        for ch in word:
-            if ch == "_":
-                cleanedword += " "
-            else:
-                cleanedword += ch
-        print("%s: %d"%(cleanedword,bestest[1]))
+    for item in top_twenty:
+        print("%s: %d"%(item[0].replace('_'," "),item[1]))
 
-    print("\n\n# of total references: %d"%(totalref))
-    print("# of pages referenced: %d"%(totalpages))
-    print("Average # of references to each page: %.2f"%(totalref/totalpages))
-    print("Average # of references per page scanned: %.2f"%(totalref/acc))
+    print("\n\n# of total references: %d"%(total_refs))
+    print("# of pages referenced: %d"%(total_referenced_pages))
+    print("Average # of references to each page: %.2f"%(total_refs/total_referenced_pages))
+    print("Average # of references per page scanned: %.2f"%(total_refs/total_searched_pages))
 
 main()
