@@ -13,7 +13,7 @@ def get_text(firstparturl,url_list,importance_list,searched_pages_list):
     try:
         url = "https://wikipedia.org/wiki/"+firstparturl
         html = urlopen(url).read()
-        soup = BeautifulSoup(html,"lxml")
+        soup = BeautifulSoup(html)
         putitheretwo,eh = binary_search(searched_pages_list,firstparturl)
         if not eh:
             searched_pages_list.insert(putitheretwo,firstparturl)
