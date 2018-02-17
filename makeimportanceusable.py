@@ -1,5 +1,5 @@
 def main():
-    infile = open("importanceofpages","r")
+    infile = open("importance_list","r")
     data = []
     word = True
     nextplace = 0
