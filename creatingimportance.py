@@ -25,7 +25,7 @@ def get_text(firstparturl,url_list,importance_list,searched_pages_list):
             href = str(a.get('href'))
             if href[0:6] == "/wiki/":
                 href = href[6:]
-                if not ('#' in href or ':' in href or "/wiki/Main_Page" == href):
+                if not ('#' in href or ':' in href or "Main_Page" == href):
                     writing(href,importance_list)
                     putithere,alreadyhere = binary_search(url_list,href)
                     if not alreadyhere:
