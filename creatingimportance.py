@@ -10,30 +10,35 @@ from urllib.request import urlopen
 from urllib.error import HTTPError, URLError
 import time
 
+counter = 0
+
 def get_text(page, url_list, importance):
-    try:
-        soup = BeautifulSoup(urlopen("https://wikipedia.org/wiki/"+\
-        page).read(), "lxml").find_all('a')
+    global counter
+    while True:
+        try:
+            soup = BeautifulSoup(urlopen("https://wikipedia.org/wiki/"+\
+            page).read(), "lxml").find_all('a')
 
-        #finds all the url links to other wikipedia pages within the html
-        for a in soup:
-            href = str(a.get('href'))
-            if href[0:6] == "/wiki/":
-                href = href[6:]
-                if not ('#' in href or ':' in href or "Main_Page" == href):
-                    if href in importance:
-                        importance[href] += 1
-                    else:
-                        importance[href] = 1
-                        url_list.append(href)
-    except (FileNotFoundError, NotADirectoryError, HTTPError):
-        pass
-
-    if len(url_list) == 0:
-        return False
-    return url_list.pop()
+            #finds all the url links to other wikipedia pages within the html
+            for a in soup:
+                href = str(a.get('href'))
+                if href[0:6] == "/wiki/":
+                    href = href[6:]
+                    if not ('#' in href or ':' in href or "Main_Page" == href):
+                        if href in importance:
+                            importance[href] += 1
+                        else:
+                            importance[href] = 1
+                            url_list.append(href)
+            counter += 1
+            page = url_list.pop()
+        except (FileNotFoundError, NotADirectoryError, HTTPError):
+            pass
+        except IndexError:
+            return
 
 def main():
+    global counter
     start_time = time.time()
 
     url_list = []
@@ -56,17 +61,12 @@ def main():
         importance[page] = 0
 
     print("Getting from files takes %.2f seconds\n" %(time.time()-start_time))
-    counter = 0
     start_time = time.time()
     try:
-        while True:
-            page = get_text(page, url_list, importance)
-            counter += 1
-            #if by God's good grace it's over
-            if page == False:
-                print("\n\nThat's a wrap folks. ")
-                print("Total files: ", len(importance))
-                raise KeyboardInterrupt
+        get_text(page, url_list, importance)
+        print("\n\nThat's a wrap folks. ")
+        print("Total files: ", len(importance))
+        raise KeyboardInterrupt
 
     #since all other exceptions are taken care of, all that's left is if the
     #user "pauses". if they do, throw the current info to some files.
