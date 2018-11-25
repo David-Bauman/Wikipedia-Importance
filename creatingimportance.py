@@ -33,9 +33,10 @@ def get_text(page, url_list, importance):
             counter += 1
             page = url_list.pop()
         except (FileNotFoundError, NotADirectoryError, HTTPError):
-            pass
+            continue
         except IndexError:
             return
+
 
 def main():
     global counter
@@ -46,21 +47,19 @@ def main():
     #if there's already files e.g. the program has been restarted after a
     #"pause", reads the files and adds all the info to the structures
     try:
-        infile = open("url_list","r")
-        url_list = infile.read().splitlines()
+        with open("url_list") as f:
+            url_list = f.read().splitlines()
         page = url_list.pop()
-        infile.close()
-        infile = open("importance","r")
-        for line in infile:
-            line = line.strip()
-            key,val = line.split('#')
-            importance[key] = int(val)
-        infile.close()
-    except (FileNotFoundError,IndexError):
+        with open("importance") as f:
+            for line in f:
+                line = line.strip()
+                key, val = line.split('#')
+                importance[key] = int(val)
+    except (FileNotFoundError, IndexError):
         page = "Mango"
         importance[page] = 0
 
-    print("Getting from files takes %.2f seconds\n" %(time.time()-start_time))
+    print("Getting from files takes %.2f seconds\n" % (time.time() - start_time))
     start_time = time.time()
     try:
         get_text(page, url_list, importance)
@@ -71,11 +70,11 @@ def main():
     #since all other exceptions are taken care of, all that's left is if the
     #user "pauses". if they do, throw the current info to some files.
     except (KeyboardInterrupt, SystemExit, URLError):
-        total_time = time.time()-start_time
+        total_time = time.time() - start_time
         s = "\n\n%s urls were searched in %s seconds, good for %s " \
-         "pages/second. %s urls to go.\n"%(format(counter,',d'),\
-        format(total_time,',.2f'),format(counter/total_time,',.2f'),\
-        format(len(url_list),',d'))
+         "pages/second. %s urls to go.\n" % (format(counter, ',d'),\
+         format(total_time, ',.2f'), format(counter/total_time, ',.2f'),\
+         format(len(url_list), ',d'))
         print(s)
 
         start_time = time.time()
@@ -83,14 +82,12 @@ def main():
         print("\nWriting to files took %.2f seconds" % (time.time()-start_time))
 
 def save(url_list, importance):
-    newfile = open("url_list","w")
-    for item in url_list:
-        newfile.write(item + "\n")
-    newfile.close()
-    infile = open("importance","w")
-    for k, v in importance.items():
-        infile.write("%s#%d\n" % (k, v))
-    infile.close()
+    with open("url_list", "w") as f:
+        for item in url_list:
+            f.write(item + "\n")
+    with open("importance", "w") as f:
+        for k, v in importance.items():
+            f.write("%s#%d\n" % (k, v))
     return
 
 main()
