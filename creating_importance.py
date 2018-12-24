@@ -33,6 +33,7 @@ def get_text(page, url_list, importance):
             counter += 1
             page = url_list.pop()
         except (FileNotFoundError, NotADirectoryError, HTTPError):
+            page = url_list.pop()
             continue
         except IndexError:
             return
@@ -52,14 +53,21 @@ def main():
         page = url_list.pop()
         with open("importance") as f:
             for line in f:
-                line = line.strip()
-                key, val = line.split('#')
+                key, val = line.strip().split('#')
                 importance[key] = int(val)
+        print("Getting from files takes %.2f seconds\n" % (time.time() - start_time))
     except (FileNotFoundError, IndexError):
-        page = "Mango"
+        page = input("What should the start page be: (Mango) ")
+        if page == "":
+            page = "Mango"
+        page.replace(" ", "_")
         importance[page] = 0
+        try:
+            urlopen("https://wikipedia.org/wiki/"+page)
+        except HTTPError:
+            print("That doesn't look like a Wikipedia page. Please check your input and run again.")
+            exit()
 
-    print("Getting from files takes %.2f seconds\n" % (time.time() - start_time))
     start_time = time.time()
     try:
         get_text(page, url_list, importance)
@@ -80,6 +88,7 @@ def main():
         start_time = time.time()
         save(url_list, importance)
         print("\nWriting to files took %.2f seconds" % (time.time()-start_time))
+
 
 def save(url_list, importance):
     with open("url_list", "w") as f:
