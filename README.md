@@ -1,5 +1,9 @@
 # Wikipedia Importance Analyzer
 
+[![GitHub Issues](https://img.shields.io/github/issues/David-Bauman/Wikipedia-Importance.svg)](https://github.com/David-Bauman/Wikipedia-Importance/issues)
+![Contributions welcome](https://img.shields.io/badge/contributions-welcome-green.svg)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+
 ## What is it?
 
 The analyzer combs through Wikipedia from a given start page. On a page it collects links to other Wikipedia pages, logs some data, and then visits each link it found to repeat the process.
